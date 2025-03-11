@@ -47,7 +47,7 @@
     <h1>Sriaara Saree Collection</h1>
     <div class="saree-grid" id="sareeContainer"></div>
 
-    <script>
+<script>
     async function fetchSarees() {
         const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
         const response = await fetch(sheetURL);
@@ -56,11 +56,14 @@
         const rows = json.table.rows;
 
         let sareesHTML = "";
-        rows.forEach(row => {
-            if (row.c[0] && row.c[1] && row.c[2]) { // Ensure row has data
-                const sareeName = row.c[0].v;   // Saree Name
-                const imageUrl = row.c[1].v;    // Image URL
-                const instaLink = row.c[2].v;   // Instagram DM Link
+        rows.forEach((row, index) => {
+            // Skip the first row if it's a header
+            if (index === 0) return;
+
+            if (row.c && row.c[0] && row.c[1] && row.c[2]) {
+                const sareeName = row.c[0].v || "Unknown Saree";
+                const imageUrl = row.c[1].v || "https://via.placeholder.com/250";
+                const instaLink = row.c[2].v || "#";
 
                 sareesHTML += `
                     <div class="saree-card">
@@ -71,10 +74,12 @@
                 `;
             }
         });
+
         document.getElementById("sareeContainer").innerHTML = sareesHTML;
     }
 
     fetchSarees();
 </script>
+
     </body>
 </html>
