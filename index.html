@@ -46,21 +46,22 @@
 <body>
     <h1>Sriaara Saree Collection</h1>
     <div class="saree-grid" id="sareeContainer"></div>
-    
+
     <script>
-        async function fetchSarees() {
-            const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
-            const response = await fetch(sheetURL);
-            const text = await response.text();
-            const json = JSON.parse(text.substring(47, text.length - 2));
-            const rows = json.table.rows;
-            
-            let sareesHTML = "";
-            rows.forEach(row => {
-                const sareeName = row.c[0].v;
-                const imageUrl = row.c[1].v;
-                const instaLink = row.c[2].v;
-                
+    async function fetchSarees() {
+        const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
+        const response = await fetch(sheetURL);
+        const text = await response.text();
+        const json = JSON.parse(text.substring(47, text.length - 2));
+        const rows = json.table.rows;
+
+        let sareesHTML = "";
+        rows.forEach(row => {
+            if (row.c[0] && row.c[1] && row.c[2]) { // Ensure row has data
+                const sareeName = row.c[0].v;   // Saree Name
+                const imageUrl = row.c[1].v;    // Image URL
+                const instaLink = row.c[2].v;   // Instagram DM Link
+
                 sareesHTML += `
                     <div class="saree-card">
                         <img src="${imageUrl}" alt="${sareeName}">
@@ -68,10 +69,12 @@
                         <a class="order-btn" href="${instaLink}" target="_blank">Order via DM</a>
                     </div>
                 `;
-            });
-            document.getElementById("sareeContainer").innerHTML = sareesHTML;
-        }
-        fetchSarees();
-    </script>
-</body>
+            }
+        });
+        document.getElementById("sareeContainer").innerHTML = sareesHTML;
+    }
+
+    fetchSarees();
+</script>
+    </body>
 </html>
