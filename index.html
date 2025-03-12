@@ -82,16 +82,14 @@
         }
         @media (max-width: 768px) {
     .saree-container {
-        display: grid !important; 
-        grid-template-columns: repeat(2, 1fr); /* Two items per row */
-        gap: 10px;
-        justify-content: center;
-        align-items: start;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(150px, 1fr)); /* Two flexible columns */
+        gap: 15px; /* Adds spacing between items */
+        padding: 0 10px; /* Adds padding to avoid edge congestion */
     }
     .saree-card {
-        width: 100%; /* Ensures full width within its grid cell */
-        max-width: 180px; /* Adjust this value as needed */
-        margin: auto; /* Centers items properly */
+        width: 100%; /* Takes full width of its grid column */
+        max-width: 100%; /* Ensures it doesn't overflow */
     }
 }
 
