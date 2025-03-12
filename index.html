@@ -14,11 +14,25 @@
         h1 {
             color: #074427;
         }
-        .saree-grid {
+        .controls {
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            padding: 10px;
+            width: 50%;
+            margin-bottom: 10px;
+        }
+        .view-toggle {
+            margin: 10px;
+        }
+        .saree-container.grid {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
+        }
+        .saree-container.list {
+            display: block;
         }
         .saree-card {
             background: white;
@@ -27,10 +41,20 @@
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 250px;
         }
+        .list .saree-card {
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+        }
         .saree-card img {
             width: 100%;
             height: auto;
             border-radius: 8px;
+        }
+        .list .saree-card img {
+            width: 100px;
         }
         .order-btn {
             display: block;
@@ -41,13 +65,39 @@
             text-decoration: none;
             border-radius: 5px;
         }
+        .pagination {
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 8px 12px;
+            margin: 5px;
+            background-color: #074427;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .page-btn.active {
+            background-color: #d4af37;
+        }
     </style>
 </head>
 <body>
     <h1>Sriaara Saree Collection</h1>
-    <div class="saree-grid" id="sareeContainer"></div>
+    <div class="controls">
+        <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
+        <button class="view-toggle" onclick="toggleView('grid')">Grid View</button>
+        <button class="view-toggle" onclick="toggleView('list')">List View</button>
+    </div>
+    <div class="saree-container grid" id="sareeContainer"></div>
+    <div class="pagination" id="pagination"></div>
 
 <script>
+    let sarees = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentView = 'grid';
+
     async function fetchSarees() {
         const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
         const response = await fetch(sheetURL);
@@ -55,31 +105,65 @@
         const json = JSON.parse(text.substring(47, text.length - 2));
         const rows = json.table.rows;
 
-        let sareesHTML = "";
-        rows.forEach((row, index) => {
-            // Skip the first row if it's a header
-            if (index === 0) return;
+        sarees = rows.slice(1).map(row => ({
+            name: row.c[0]?.v || "Unknown Saree",
+            image: row.c[1]?.v || "https://via.placeholder.com/250",
+            link: row.c[2]?.v || "#"
+        }));
+        renderSarees();
+    }
 
-            if (row.c && row.c[0] && row.c[1] && row.c[2]) {
-                const sareeName = row.c[0].v || "Unknown Saree";
-                const imageUrl = row.c[1].v || "https://via.placeholder.com/250";
-                const instaLink = row.c[2].v || "#";
+    function renderSarees() {
+        const sareeContainer = document.getElementById("sareeContainer");
+        sareeContainer.className = `saree-container ${currentView}`;
+        sareeContainer.innerHTML = "";
 
-                sareesHTML += `
-                    <div class="saree-card">
-                        <img src="${imageUrl}" alt="${sareeName}">
-                        <p>${sareeName}</p>
-                        <a class="order-btn" href="${instaLink}" target="_blank">Order via DM</a>
-                    </div>
-                `;
-            }
+        let start = (currentPage - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+        let paginatedItems = sarees.slice(start, end);
+
+        paginatedItems.forEach(saree => {
+            let card = document.createElement("div");
+            card.className = "saree-card";
+            card.innerHTML = `
+                <img src="${saree.image}" alt="${saree.name}">
+                <p>${saree.name}</p>
+                <a class="order-btn" href="${saree.link}" target="_blank">Order via DM</a>
+            `;
+            sareeContainer.appendChild(card);
         });
+        renderPagination();
+    }
 
-        document.getElementById("sareeContainer").innerHTML = sareesHTML;
+    function renderPagination() {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        let pageCount = Math.ceil(sarees.length / itemsPerPage);
+        for (let i = 1; i <= pageCount; i++) {
+            let btn = document.createElement("button");
+            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+                renderSarees();
+            };
+            pagination.appendChild(btn);
+        }
+    }
+
+    function toggleView(view) {
+        currentView = view;
+        renderSarees();
+    }
+
+    function filterSarees() {
+        let query = document.getElementById("searchBar").value.toLowerCase();
+        sarees = sarees.filter(saree => saree.name.toLowerCase().includes(query));
+        currentPage = 1;
+        renderSarees();
     }
 
     fetchSarees();
 </script>
-
-    </body>
+</body>
 </html>
