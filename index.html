@@ -82,15 +82,18 @@
         }
         @media (max-width: 768px) {
     .saree-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Ensures 2 items per row */
+        display: grid !important; 
+        grid-template-columns: repeat(2, 1fr); /* Two items per row */
         gap: 10px;
         justify-content: center;
-        }
-      .saree-card {
-        width: 100%; /* Makes sure the card takes full width in its grid cell */
-       }
-     }
+        align-items: start;
+    }
+    .saree-card {
+        width: 100%; /* Ensures full width within its grid cell */
+        max-width: 180px; /* Adjust this value as needed */
+        margin: auto; /* Centers items properly */
+    }
+}
 
     </style>
 </head>
@@ -98,7 +101,7 @@
     <h1>Sriaara Saree Collection</h1>
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
-        <button class="view-toggle" onclick="toggleView('grid')">🔲 Grid</button>
+        <button class="view-toggle" onclick="toggleView('grid')"> # Grid</button>
         <button class="view-toggle" onclick="toggleView('list')">📄 List</button>
     </div>
     <div class="saree-container" id="sareeContainer"></div>
