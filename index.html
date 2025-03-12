@@ -83,18 +83,17 @@
   @media (max-width: 768px) {
     .saree-container {
         display: grid !important;
-        grid-template-columns: repeat(2, minmax(150px, 1fr)); /* Two flexible columns */
-        gap: 15px; /* Space between items */
-        padding: 0 5%; /* Adds balanced padding to left & right */
-        justify-content: center; /* Ensures items are centered */
+        grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+        gap: 15px;
+        padding: 0 10px;
+        justify-content: center; /* Center the grid */
+        align-items: center;
     }
     .saree-card {
-        width: 100%; /* Takes full width of its grid column */
-        max-width: 100%; /* Prevents overflow */
-        margin: 0 auto; /* Ensures proper centering */
+        width: 100%;
+        max-width: 100%;
     }
 }
-
     </style>
 </head>
 <body>
@@ -168,10 +167,21 @@
         }
     }
 
-    function toggleView(view) {
-        currentView = view;
-        renderSarees();
+ function toggleView(view) {
+    currentView = view;
+    const sareeContainer = document.getElementById("sareeContainer");
+    
+    if (view === 'grid') {
+        sareeContainer.style.display = 'grid';
+        sareeContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+        sareeContainer.style.gap = '20px';
+    } else {
+        sareeContainer.style.display = 'block';
     }
+
+    renderSarees();
+}
+
 
     function filterSarees() {
         let query = document.getElementById("searchBar").value.toLowerCase();
