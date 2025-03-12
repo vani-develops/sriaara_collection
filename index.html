@@ -81,16 +81,17 @@
             background-color: #d4af37;
         }
         @media (max-width: 768px) {
-            .saree-container {
-                justify-content: space-around;
-            }
-            .saree-card {
-                width: 45%;
-            }
-            .search-bar {
-                width: 80%;
-            }
+    .saree-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Ensures 2 items per row */
+        gap: 10px;
+        justify-content: center;
         }
+      .saree-card {
+        width: 100%; /* Makes sure the card takes full width in its grid cell */
+       }
+     }
+
     </style>
 </head>
 <body>
