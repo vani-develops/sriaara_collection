@@ -36,17 +36,17 @@
             border-radius: 5px;
         }
         .saree-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            justify-content: center;
+            padding: 0 10px;
         }
         .saree-card {
             background: white;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            width: 250px;
             text-align: center;
         }
         .saree-card img {
@@ -80,27 +80,52 @@
         .page-btn.active {
             background-color: #d4af37;
         }
-  @media (max-width: 768px) {
-    .saree-container {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr); /* Two equal columns */
-        gap: 15px;
-        padding: 0 10px;
-        justify-content: center; /* Center the grid */
-        align-items: center;
-    }
-    .saree-card {
-        width: 100%;
-        max-width: 100%;
-    }
-}
+        
+        /* Hide view toggle buttons on desktop */
+        @media (min-width: 769px) {
+            .view-toggle {
+                display: none;
+            }
+        }
+
+        /* Mobile Grid & List View */
+        @media (max-width: 768px) {
+            .saree-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* Two columns in mobile grid */
+                gap: 15px;
+            }
+            .saree-card {
+                width: 100%;
+            }
+            .search-bar {
+                width: 80%;
+            }
+        }
+
+        /* List view for mobile */
+        .list-view .saree-container {
+            display: block;
+        }
+        .list-view .saree-card {
+            width: 90%;
+            margin: 0 auto;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .list-view .saree-card img {
+            width: 100px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <h1>Sriaara Saree Collection</h1>
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
-        <button class="view-toggle" onclick="toggleView('grid')"> # Grid</button>
+        <button class="view-toggle" onclick="toggleView('grid')">🔲 Grid</button>
         <button class="view-toggle" onclick="toggleView('list')">📄 List</button>
     </div>
     <div class="saree-container" id="sareeContainer"></div>
@@ -132,15 +157,14 @@
     function renderSarees() {
         const sareeContainer = document.getElementById("sareeContainer");
         sareeContainer.innerHTML = "";
-        sareeContainer.style.display = currentView === 'grid' ? 'flex' : 'block';
-
+        
         let start = (currentPage - 1) * itemsPerPage;
         let end = start + itemsPerPage;
         let paginatedItems = filteredSarees.slice(start, end);
 
         paginatedItems.forEach(saree => {
             let card = document.createElement("div");
-            card.className = `saree-card ${currentView}`;
+            card.className = `saree-card`;
             card.innerHTML = `
                 <img src="${saree.image}" alt="${saree.name}">
                 <p>${saree.name}</p>
@@ -148,6 +172,7 @@
             `;
             sareeContainer.appendChild(card);
         });
+
         renderPagination();
     }
 
@@ -167,21 +192,19 @@
         }
     }
 
- function toggleView(view) {
-    currentView = view;
-    const sareeContainer = document.getElementById("sareeContainer");
-    
-    if (view === 'grid') {
-        sareeContainer.style.display = 'grid';
-        sareeContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
-        sareeContainer.style.gap = '20px';
-    } else {
-        sareeContainer.style.display = 'block';
+    function toggleView(view) {
+        const body = document.body;
+        if (window.innerWidth <= 768) { // Only apply for mobile screens
+            if (view === 'grid') {
+                body.classList.remove('list-view');
+                document.getElementById("sareeContainer").style.display = 'grid';
+            } else {
+                body.classList.add('list-view');
+                document.getElementById("sareeContainer").style.display = 'block';
+            }
+        }
+        renderSarees();
     }
-
-    renderSarees();
-}
-
 
     function filterSarees() {
         let query = document.getElementById("searchBar").value.toLowerCase();
