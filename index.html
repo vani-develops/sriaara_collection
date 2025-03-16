@@ -174,42 +174,51 @@
     const itemsPerPage = 10;
     let currentView = 'grid';
 
-    async function fetchSarees() {
-        const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
-        const response = await fetch(sheetURL);
-        const text = await response.text();
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
+   async function fetchSarees() {
+    const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
+    const response = await fetch(sheetURL);
+    const text = await response.text();
+    const json = JSON.parse(text.substring(47, text.length - 2));
+    const rows = json.table.rows;
 
-        sarees = rows.slice(1).map(row => ({
-            name: row.c[0]?.v || "Unknown Saree",
-            image: row.c[1]?.v || "https://via.placeholder.com/250",
-            whatsapp: `https://wa.me/1123454567?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
-        }));
-        renderSarees();
-    }
+    sarees = rows.slice(1).map(row => ({
+        name: row.c[0]?.v || "Unknown Saree",
+        image: row.c[1]?.v || "https://via.placeholder.com/250",
+        availability: row.c[2]?.v || "Available",  
+        whatsapp: `https://wa.me/9381403370?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
+    }));
+    renderSarees();
+}
 
     function renderSarees() {
-        const sareeContainer = document.getElementById("sareeContainer");
-        sareeContainer.className = `saree-container ${currentView}`;
-        sareeContainer.innerHTML = "";
+    const sareeContainer = document.getElementById("sareeContainer");
+    sareeContainer.className = `saree-container ${currentView}`;
+    sareeContainer.innerHTML = "";
 
-        let start = (currentPage - 1) * itemsPerPage;
-        let end = start + itemsPerPage;
-        let paginatedItems = sarees.slice(start, end);
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = start + itemsPerPage;
+    let paginatedItems = sarees.slice(start, end);
 
-        paginatedItems.forEach(saree => {
-            let card = document.createElement("div");
-            card.className = "saree-card";
-            card.innerHTML = `
-                <img src="${saree.image}" alt="${saree.name}">
-                <p class="saree-name">${saree.name}</p>
-                <a class="order-btn" href="${saree.whatsapp}" target="_blank">Order via WhatsApp</a>
-            `;
-            sareeContainer.appendChild(card);
-        });
-        renderPagination();
-    }
+    paginatedItems.forEach(saree => {
+        let card = document.createElement("div");
+        card.className = "saree-card";
+
+        // Check if the saree is sold out
+        let isSoldOut = saree.availability.toLowerCase() === "sold out";
+        let orderButton = isSoldOut 
+            ? `<button class="order-btn sold-out" disabled>Sold Out</button>` 
+            : `<a class="order-btn" href="${saree.whatsapp}" target="_blank">Order via WhatsApp</a>`;
+
+        card.innerHTML = `
+            <img src="${saree.image}" alt="${saree.name}">
+            <p class="saree-name">${saree.name}</p>
+            ${orderButton}
+        `;
+        sareeContainer.appendChild(card);
+    });
+
+    renderPagination();
+}
 
     function renderPagination() {
         const pagination = document.getElementById("pagination");
