@@ -4,15 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sriaara Saree Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fdfaf5;
             text-align: center;
             padding: 20px;
+            color: #333;
         }
         h1 {
+            font-family: 'Playfair Display', serif;
             color: #074427;
+            font-size: 28px;
+        }
+        .legend {
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        .legend a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: bold;
         }
         .controls {
             display: flex;
@@ -25,38 +38,50 @@
             padding: 10px;
             width: 90%;
             max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
         }
         .view-toggle {
             padding: 10px 15px;
             border: none;
             background-color: #074427;
             color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             width: 90%;
             max-width: 200px;
             font-size: 16px;
+            transition: 0.3s;
+        }
+        .view-toggle:hover {
+            background-color: #d4af37;
         }
         .saree-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
             gap: 15px;
+            justify-content: center;
+        }
+        .grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .saree-card {
             background: white;
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
         .list .saree-card {
-            max-width: 100%;
+            width: 90%;
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 10px;
+            padding: 12px;
         }
         .saree-card img {
             width: 100%;
@@ -66,6 +91,13 @@
         .list .saree-card img {
             width: 100px;
         }
+        .saree-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: #074427;
+            font-weight: 500;
+            margin: 8px 0;
+        }
         .order-btn {
             display: block;
             margin-top: 10px;
@@ -74,6 +106,10 @@
             color: white;
             text-decoration: none;
             border-radius: 5px;
+            transition: 0.3s;
+        }
+        .order-btn:hover {
+            background-color: #b08d2d;
         }
         .pagination {
             margin-top: 20px;
@@ -86,19 +122,31 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
+            transition: 0.3s;
+        }
+        .page-btn:hover {
+            background-color: #d4af37;
         }
         .page-btn.active {
             background-color: #d4af37;
+        }
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Sriaara Saree Collection</h1>
+    <p class="legend">Follow us on Instagram: <a href="https://www.instagram.com/sriaara_stories" target="_blank">@sriaara_stories</a></p>
+    
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
         <button class="view-toggle" onclick="toggleView('grid')">🔳 Grid View</button>
         <button class="view-toggle" onclick="toggleView('list')">📋 List View</button>
     </div>
+    
     <div class="saree-container grid" id="sareeContainer"></div>
     <div class="pagination" id="pagination"></div>
 
@@ -118,7 +166,7 @@
         sarees = rows.slice(1).map(row => ({
             name: row.c[0]?.v || "Unknown Saree",
             image: row.c[1]?.v || "https://via.placeholder.com/250",
-            whatsapp: `https://wa.me/1123454567?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
+            whatsapp: `https://wa.me/9381403370?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
         }));
         renderSarees();
     }
@@ -137,7 +185,7 @@
             card.className = "saree-card";
             card.innerHTML = `
                 <img src="${saree.image}" alt="${saree.name}">
-                <p>${saree.name}</p>
+                <p class="saree-name">${saree.name}</p>
                 <a class="order-btn" href="${saree.whatsapp}" target="_blank">Order via WhatsApp</a>
             `;
             sareeContainer.appendChild(card);
