@@ -146,24 +146,33 @@
         renderSarees();
     }
 
-    function renderSarees() {
-        const sareeContainer = document.getElementById("sareeContainer");
-        sareeContainer.innerHTML = "";
-        
-        let start = (currentPage - 1) * itemsPerPage;
-        let end = start + itemsPerPage;
-        let paginatedItems = filteredSarees.slice(start, end);
+function renderSarees() {
+    const sareeContainer = document.getElementById("sareeContainer");
+    sareeContainer.innerHTML = "";
+    
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = start + itemsPerPage;
+    let paginatedItems = filteredSarees.slice(start, end);
 
-        paginatedItems.forEach(saree => {
-            let card = document.createElement("div");
-            card.className = `saree-card`;
-            card.innerHTML = `
-                <img src="${saree.image}" alt="${saree.name}">
-                <p>${saree.name}</p>
-                <a class="order-btn" href="${saree.link}" target="_blank">Order via DM</a>
-            `;
-            sareeContainer.appendChild(card);
-        });
+    paginatedItems.forEach(saree => {
+        let card = document.createElement("div");
+        card.className = `saree-card`;
+
+        // Encode message for Instagram DM
+        let message = encodeURIComponent(`Hi! I'm interested in this saree: ${saree.name} \n ${saree.image}`);
+        let dmLink = `https://www.instagram.com/direct/t/your_username/?text=${message}`;
+
+        card.innerHTML = `
+            <img src="${saree.image}" alt="${saree.name}">
+            <p>${saree.name}</p>
+            <a class="order-btn" href="${dmLink}" target="_blank">Order via DM</a>
+        `;
+        sareeContainer.appendChild(card);
+    });
+
+    renderPagination();
+}
+
 
         renderPagination();
     }
