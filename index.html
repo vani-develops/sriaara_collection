@@ -149,7 +149,7 @@
 function renderSarees() {
     const sareeContainer = document.getElementById("sareeContainer");
     sareeContainer.innerHTML = "";
-    
+
     let start = (currentPage - 1) * itemsPerPage;
     let end = start + itemsPerPage;
     let paginatedItems = filteredSarees.slice(start, end);
@@ -158,14 +158,16 @@ function renderSarees() {
         let card = document.createElement("div");
         card.className = `saree-card`;
 
-        // Encode message for Instagram DM
-        let message = encodeURIComponent(`Hi! I'm interested in this saree: ${saree.name} \n ${saree.image}`);
-        let dmLink = `https://www.instagram.com/direct/t/72755543870/?text=${message}`;
+        // Instagram does not support direct message text prefill, so we instruct users
+        let message = `Hi! I'm interested in this saree: ${saree.name} \nImage: ${saree.image}`;
+        
+        let dmLink = `https://www.instagram.com/direct/t/72755543870/`;
 
         card.innerHTML = `
             <img src="${saree.image}" alt="${saree.name}">
             <p>${saree.name}</p>
-            <a class="order-btn" href="${dmLink}" target="_blank">Order via DM</a>
+            <a class="order-btn" href="${dmLink}" target="_blank"
+                onclick="alert('Copy this message and send in DM: \\n\\n ${message}');">Order via DM</a>
         `;
         sareeContainer.appendChild(card);
     });
@@ -173,9 +175,6 @@ function renderSarees() {
     renderPagination();
 }
 
-
-        renderPagination();
-    }
 
     function renderPagination() {
         const pagination = document.getElementById("pagination");
