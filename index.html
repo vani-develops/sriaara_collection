@@ -15,30 +15,29 @@
             color: #074427;
         }
         .controls {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
             margin-bottom: 20px;
         }
         .search-bar {
             padding: 10px;
-            width: 90%;
+            width: 80%;
             max-width: 400px;
+            margin-bottom: 10px;
+        }
+        .view-toggle {
+            margin: 10px;
         }
         .saree-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            padding: 0 10px;
+            gap: 20px;
         }
         .saree-card {
             background: white;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
             text-align: center;
         }
         .saree-card img {
@@ -54,16 +53,13 @@
             color: white;
             text-decoration: none;
             border-radius: 5px;
-            cursor: pointer;
         }
         .pagination {
             margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
         }
         .page-btn {
             padding: 8px 12px;
+            margin: 5px;
             background-color: #074427;
             color: white;
             border: none;
@@ -73,49 +69,42 @@
         .page-btn.active {
             background-color: #d4af37;
         }
-        .legend {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #074427;
-        }
-        .instagram-link {
-            margin-top: 20px;
-            display: block;
-            color: #074427;
-            font-weight: bold;
-            text-decoration: none;
+        @media (max-width: 600px) {
+            .saree-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .saree-card {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Sriaara Saree Collection</h1>
-    <a href="https://www.instagram.com/sriaara_stories/" class="instagram-link" target="_blank">Follow us on Instagram</a>
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
     </div>
-    <div class="legend" id="legend">Page 1</div>
     <div class="saree-container" id="sareeContainer"></div>
     <div class="pagination" id="pagination"></div>
 
 <script>
     let sarees = [];
-    let filteredSarees = [];
     let currentPage = 1;
-    const itemsPerPage = 12;
+    const itemsPerPage = 10;
 
     async function fetchSarees() {
-        const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json"; 
+        const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
         const response = await fetch(sheetURL);
         const text = await response.text();
         const json = JSON.parse(text.substring(47, text.length - 2));
         const rows = json.table.rows;
-    
+
         sarees = rows.slice(1).map(row => ({
             name: row.c[0]?.v || "Unknown Saree",
-            image: row.c[1]?.v || "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-            link: row.c[2]?.v || "#"
+            image: row.c[1]?.v || "https://via.placeholder.com/250",
+            link: `https://wa.me/918888888888?text=I'm%20interested%20in%20this%20saree:%20${encodeURIComponent(row.c[0]?.v || "Saree")}`
         }));
-        filteredSarees = sarees;
         renderSarees();
     }
 
@@ -125,38 +114,41 @@
 
         let start = (currentPage - 1) * itemsPerPage;
         let end = start + itemsPerPage;
-        let paginatedItems = filteredSarees.slice(start, end);
+        let paginatedItems = sarees.slice(start, end);
 
         paginatedItems.forEach(saree => {
             let card = document.createElement("div");
-            card.className = `saree-card`;
-
+            card.className = "saree-card";
             card.innerHTML = `
                 <img src="${saree.image}" alt="${saree.name}">
                 <p>${saree.name}</p>
-                <a class="order-btn" href="#" onclick="sendWhatsAppMessage(event, '${saree.name}', '${saree.image}')">
-                    Order / Price Inquiry
-                </a>
+                <a class="order-btn" href="${saree.link}" target="_blank">Order via WhatsApp</a>
             `;
             sareeContainer.appendChild(card);
         });
-
-        document.getElementById("legend").innerText = `Page ${currentPage}`;
         renderPagination();
     }
 
-    function sendWhatsAppMessage(event, sareeName, imageUrl) {
-        event.preventDefault();
-        let phoneNumber = "9381403370"; 
-        let message = `Hi! I'm interested in this saree:\n*Saree Name:* ${sareeName}\n\n*Image:* ${imageUrl}`;
-        let encodedMessage = encodeURIComponent(message);
-        let whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        window.open(whatsappLink, "_blank");
+    function renderPagination() {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        let pageCount = Math.ceil(sarees.length / itemsPerPage);
+        for (let i = 1; i <= pageCount; i++) {
+            let btn = document.createElement("button");
+            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+                renderSarees();
+            };
+            pagination.appendChild(btn);
+        }
     }
 
     function filterSarees() {
         let query = document.getElementById("searchBar").value.toLowerCase();
-        filteredSarees = sarees.filter(saree => saree.name.toLowerCase().includes(query));
+        let filteredSarees = sarees.filter(saree => saree.name.toLowerCase().includes(query));
+        sarees = filteredSarees;
         currentPage = 1;
         renderSarees();
     }
