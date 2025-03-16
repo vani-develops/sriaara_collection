@@ -91,20 +91,26 @@
 
     async function fetchSarees() {
         const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json"; 
-        const response = await fetch(sheetURL);
-        const text = await response.text();
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
-    
-        sarees = rows.slice(1).map(row => ({
-            name: row.c[0]?.v || "Unknown Saree",
-            image: row.c[1]?.v || "https://res.cloudinary.com/demo/image/upload/sample.jpg", // Cloudinary URL
-            link: row.c[2]?.v || "#"
-        }));
-        filteredSarees = sarees;
-        renderSarees();
-    }
+        try {
+            const response = await fetch(sheetURL);
+            const text = await response.text();
+            const json = JSON.parse(text.substring(47, text.length - 2));
+            const rows = json.table.rows;
 
+            console.log(rows); // Debugging: Check what Google Sheets is returning
+
+            sarees = rows.map(row => ({
+                name: row.c[0]?.v || "Unknown Saree",
+                image: row.c[1]?.v || "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+                link: row.c[2]?.v || "#"
+            }));
+
+            filteredSarees = sarees;
+            renderSarees();
+        } catch (error) {
+            console.error("Error fetching sarees:", error);
+        }
+    }
 
     function renderSarees() {
         const sareeContainer = document.getElementById("sareeContainer");
@@ -121,8 +127,8 @@
             card.innerHTML = `
                 <img src="${saree.image}" alt="${saree.name}">
                 <p>${saree.name}</p>
-                <a class="order-btn" href="#" onclick="sendInstagramMessage(event, '${saree.name}', '${saree.image}')">
-                    Order via DM
+                <a class="order-btn" href="#" onclick="sendWhatsAppMessage(event, '${saree.name}', '${saree.image}')">
+                    Order via WhatsApp
                 </a>
             `;
             sareeContainer.appendChild(card);
@@ -147,18 +153,17 @@
         }
     }
 
-    function sendInstagramMessage(event, sareeName, imageUrl) {
+    function sendWhatsAppMessage(event, sareeName, imageUrl) {
         event.preventDefault(); // Prevent default link behavior
 
-        let message = `Hi! I'm interested in this saree: ${sareeName}%0AImage: ${imageUrl}`;
+        let phoneNumber = "YOUR_PHONE_NUMBER"; // Replace with your WhatsApp number
+        let message = `Hi! I'm interested in this saree: ${sareeName}\nImage: ${imageUrl}`;
 
-        // Open Instagram DM page
-        window.open("https://www.instagram.com/direct/inbox/", "_blank");
+        // WhatsApp message link
+        let whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
-        // Copy message to clipboard for user
-        navigator.clipboard.writeText(decodeURIComponent(message)).then(() => {
-            alert("Message copied! Paste it in Instagram DM.");
-        });
+        // Open WhatsApp
+        window.open(whatsappURL, "_blank");
     }
 
     function filterSarees() {
