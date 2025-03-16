@@ -24,12 +24,12 @@
         }
         .search-bar {
             padding: 10px;
-            width: 50%;
+            width: 90%;
             max-width: 400px;
         }
         .saree-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             justify-content: center;
             padding: 0 10px;
@@ -50,7 +50,7 @@
             display: block;
             margin-top: 10px;
             padding: 10px;
-            background-color: #25D366; /* WhatsApp Green */
+            background-color: #d4af37;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -73,26 +73,27 @@
         .page-btn.active {
             background-color: #d4af37;
         }
-        .insta-link {
-            display: block;
-            margin-bottom: 15px;
-            font-size: 16px;
-            text-decoration: none;
-            color: #d62976; /* Instagram color */
+        .legend {
+            margin-top: 10px;
             font-weight: bold;
+            color: #074427;
+        }
+        .instagram-link {
+            margin-top: 20px;
+            display: block;
+            color: #074427;
+            font-weight: bold;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <h1>Sriaara Saree Collection</h1>
-    <a class="insta-link" href="https://www.instagram.com/your_instagram_page" target="_blank">
-        📸 Follow us on Instagram
-    </a>
-
+    <a href="https://www.instagram.com/sriaara_stories/" class="instagram-link" target="_blank">Follow us on Instagram</a>
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
     </div>
-    
+    <div class="legend" id="legend">Page 1</div>
     <div class="saree-container" id="sareeContainer"></div>
     <div class="pagination" id="pagination"></div>
 
@@ -111,7 +112,7 @@
     
         sarees = rows.slice(1).map(row => ({
             name: row.c[0]?.v || "Unknown Saree",
-            image: row.c[1]?.v || "https://res.cloudinary.com/demo/image/upload/sample.jpg", // Cloudinary URL
+            image: row.c[1]?.v || "https://res.cloudinary.com/demo/image/upload/sample.jpg",
             link: row.c[2]?.v || "#"
         }));
         filteredSarees = sarees;
@@ -134,38 +135,23 @@
                 <img src="${saree.image}" alt="${saree.name}">
                 <p>${saree.name}</p>
                 <a class="order-btn" href="#" onclick="sendWhatsAppMessage(event, '${saree.name}', '${saree.image}')">
-                    Order on WhatsApp
+                    Order / Price Inquiry
                 </a>
             `;
             sareeContainer.appendChild(card);
         });
 
+        document.getElementById("legend").innerText = `Page ${currentPage}`;
         renderPagination();
     }
 
-    function renderPagination() {
-        const pagination = document.getElementById("pagination");
-        pagination.innerHTML = "";
-        let pageCount = Math.ceil(filteredSarees.length / itemsPerPage);
-        for (let i = 1; i <= pageCount; i++) {
-            let btn = document.createElement("button");
-            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-            btn.textContent = i;
-            btn.onclick = () => {
-                currentPage = i;
-                renderSarees();
-            };
-            pagination.appendChild(btn);
-        }
-    }
-
     function sendWhatsAppMessage(event, sareeName, imageUrl) {
-        event.preventDefault(); // Prevent default link behavior
-
-        let message = `Hi! I'm interested in this saree:%0A*${sareeName}*%0A%0AImage:%0A${imageUrl}`;
-        let whatsappURL = `https://wa.me/9381403370?text=${message}`; // Change to your WhatsApp number
-
-        window.open(whatsappURL, "_blank");
+        event.preventDefault();
+        let phoneNumber = "9381403370"; 
+        let message = `Hi! I'm interested in this saree:\n*Saree Name:* ${sareeName}\n\n*Image:* ${imageUrl}`;
+        let encodedMessage = encodeURIComponent(message);
+        let whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappLink, "_blank");
     }
 
     function filterSarees() {
