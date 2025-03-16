@@ -90,7 +90,7 @@
     const itemsPerPage = 12;
 
     async function fetchSarees() {
-        const sheetURL = "YOUR_GOOGLE_SHEET_JSON_URL"; 
+        const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json"; 
         const response = await fetch(sheetURL);
         const text = await response.text();
         const json = JSON.parse(text.substring(47, text.length - 2));
