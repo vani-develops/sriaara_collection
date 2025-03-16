@@ -15,27 +15,33 @@
             color: #074427;
         }
         .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
         }
         .search-bar {
             padding: 10px;
-            width: 50%;
-            margin-bottom: 10px;
+            width: 90%;
+            max-width: 400px;
         }
         .view-toggle {
-            margin: 10px;
-            cursor: pointer;
-            padding: 8px 12px;
+            padding: 10px 15px;
             border: none;
             background-color: #074427;
             color: white;
             border-radius: 5px;
+            cursor: pointer;
+            width: 90%;
+            max-width: 200px;
+            font-size: 16px;
         }
         .saree-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
         .saree-card {
             background: white;
@@ -90,8 +96,8 @@
     <h1>Sriaara Saree Collection</h1>
     <div class="controls">
         <input type="text" class="search-bar" id="searchBar" placeholder="Search sarees..." onkeyup="filterSarees()">
-        <button class="view-toggle" onclick="toggleView('grid')">Grid View</button>
-        <button class="view-toggle" onclick="toggleView('list')">List View</button>
+        <button class="view-toggle" onclick="toggleView('grid')">🔳 Grid View</button>
+        <button class="view-toggle" onclick="toggleView('list')">📋 List View</button>
     </div>
     <div class="saree-container grid" id="sareeContainer"></div>
     <div class="pagination" id="pagination"></div>
@@ -112,7 +118,7 @@
         sarees = rows.slice(1).map(row => ({
             name: row.c[0]?.v || "Unknown Saree",
             image: row.c[1]?.v || "https://via.placeholder.com/250",
-            whatsapp: `https://wa.me/9381403370?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
+            whatsapp: `https://wa.me/1123454567?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
         }));
         renderSarees();
     }
