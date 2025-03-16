@@ -37,7 +37,7 @@
         }
         .saree-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 per row on desktop */
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             justify-content: center;
             padding: 0 10px;
@@ -80,22 +80,19 @@
         .page-btn.active {
             background-color: #d4af37;
         }
-        
-        /* Hide view toggle buttons on desktop */
+
         @media (min-width: 769px) {
             .view-toggle {
                 display: none !important;
             }
         }
 
-        /* Mobile Grid & List View */
         @media (max-width: 768px) {
             .saree-container {
-                grid-template-columns: repeat(2, 1fr); /* 2 per row in mobile grid */
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* List view for mobile */
         .list-view .saree-container {
             display: block;
         }
@@ -132,54 +129,61 @@
 
     async function fetchSarees() {
         const sheetURL = "https://docs.google.com/spreadsheets/d/139WZkf0zqrcRmbrjeib0cTgwkPCPMC35zH1nS74gCQQ/gviz/tq?tqx=out:json";
-        const response = await fetch(sheetURL);
-        const text = await response.text();
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
+        try {
+            const response = await fetch(sheetURL);
+            const text = await response.text();
+            const json = JSON.parse(text.match(/\{.*\}/s)[0]); // Extract JSON dynamically
+            const rows = json.table.rows;
 
-        sarees = rows.slice(1).map(row => ({
-            name: row.c[0]?.v || "Unknown Saree",
-            image: row.c[1]?.v || "https://via.placeholder.com/250",
-            link: row.c[2]?.v || "#"
-        }));
-        filteredSarees = sarees;
-        renderSarees();
+            sarees = rows.map(row => ({
+                name: row.c[0]?.v || "Unknown Saree",
+                image: row.c[1]?.v || "https://via.placeholder.com/250",
+                link: row.c[2]?.v || "#"
+            }));
+
+            filteredSarees = sarees;
+            renderSarees();
+        } catch (error) {
+            console.error("Error fetching sarees:", error);
+        }
     }
 
-function renderSarees() {
-    const sareeContainer = document.getElementById("sareeContainer");
-    sareeContainer.innerHTML = "";
+    function renderSarees() {
+        const sareeContainer = document.getElementById("sareeContainer");
+        sareeContainer.innerHTML = "";
 
-    let start = (currentPage - 1) * itemsPerPage;
-    let end = start + itemsPerPage;
-    let paginatedItems = filteredSarees.slice(start, end);
+        let start = (currentPage - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+        let paginatedItems = filteredSarees.slice(start, end);
 
-    paginatedItems.forEach(saree => {
-        let card = document.createElement("div");
-        card.className = `saree-card`;
+        if (paginatedItems.length === 0) {
+            sareeContainer.innerHTML = "<p>No results found</p>";
+            return;
+        }
 
-        // Instagram does not support direct message text prefill, so we instruct users
-        let message = `Hi! I'm interested in this saree: ${saree.name} \nImage: ${saree.image}`;
-        
-        let dmLink = `https://www.instagram.com/direct/t/72755543870/`;
+        paginatedItems.forEach(saree => {
+            let card = document.createElement("div");
+            card.className = `saree-card`;
 
-        card.innerHTML = `
-            <img src="${saree.image}" alt="${saree.name}">
-            <p>${saree.name}</p>
-            <a class="order-btn" href="${dmLink}" target="_blank"
-                onclick="alert('Copy this message and send in DM: \\n\\n ${message}');">Order via DM</a>
-        `;
-        sareeContainer.appendChild(card);
-    });
+            let message = encodeURIComponent(`Hi! I'm interested in this saree: ${saree.name}`);
+            let dmLink = `https://www.instagram.com/direct/inbox/?text=${message}`;
 
-    renderPagination();
-}
+            card.innerHTML = `
+                <img src="${saree.image}" alt="${saree.name}">
+                <p>${saree.name}</p>
+                <a class="order-btn" href="${dmLink}" target="_blank">Order via DM</a>
+            `;
+            sareeContainer.appendChild(card);
+        });
 
+        renderPagination();
+    }
 
     function renderPagination() {
         const pagination = document.getElementById("pagination");
         pagination.innerHTML = "";
         let pageCount = Math.ceil(filteredSarees.length / itemsPerPage);
+
         for (let i = 1; i <= pageCount; i++) {
             let btn = document.createElement("button");
             btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
@@ -194,14 +198,8 @@ function renderSarees() {
 
     function toggleView(view) {
         const body = document.body;
-        if (window.innerWidth <= 768) { // Only apply for mobile screens
-            if (view === 'grid') {
-                body.classList.remove('list-view');
-                document.getElementById("sareeContainer").style.display = 'grid';
-            } else {
-                body.classList.add('list-view');
-                document.getElementById("sareeContainer").style.display = 'block';
-            }
+        if (window.innerWidth <= 768) {
+            body.classList.toggle('list-view', view === 'list');
         }
         renderSarees();
     }
