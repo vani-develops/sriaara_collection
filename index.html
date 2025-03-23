@@ -55,18 +55,20 @@
             text-decoration: underline;
         }
         
-        /* Hide right-links on mobile */
-        .right-links {
-            display: none;
-        }
-        
-        /* Show mobile legend only on smaller screens */
-        @media (min-width: 769px) {
-            .mobile-legend {
-                display: none;
+        @media (max-width: 768px) {
+            .right-links {
+                display: none; /* Hide contact/insta links on mobile */
+            }
+            .mobile-instagram {
+                display: block; /* Ensure Instagram text appears on mobile */
             }
         }
 
+       @media (min-width: 769px) {
+            .mobile-instagram {
+                display: none;
+            }
+        }
         .navbar .right-links {
             display: flex;
             gap: 10px;
@@ -212,12 +214,16 @@
 <body>
     <div class="navbar">
         <h2>Sriaara Collections</h2>
-        <div class="right-links">
-           <a href="https://www.instagram.com/sriaara_stories" target="_blank">Insta@sriaara_stories</a>
-         </div>
-<p class="mobile-instagram"><a href="https://www.instagram.com/sriaara_stories" target="_blank">Follow us on Insta@sriaara_stories</a></p>
-
-    </div>
+        <div class="navbar">
+            <h2>Sriaara Collections</h2>
+            <div class="right-links">
+                <a href="#contact">Contact</a>
+                <a href="https://www.instagram.com/sriaara_stories" target="_blank">Insta@sriaara_stories</a>
+            </div>
+                <p class="mobile-instagram">
+                    <a href="https://www.instagram.com/sriaara_stories" target="_blank">Follow us on Instagram @sriaara_stories</a>
+                </p>
+        </div>
     
     <div class="saree-container grid" id="sareeContainer"></div>
     <div class="pagination" id="pagination"></div>
