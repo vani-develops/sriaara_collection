@@ -207,7 +207,7 @@
         let isSoldOut = saree.availability.toLowerCase() === "sold out";
         let orderButton = isSoldOut 
             ? `<button class="order-btn sold-out" disabled>Sold Out</button>` 
-            : `<a class="order-btn" href="${saree.whatsapp}" target="_blank">Order via WhatsApp</a>`;
+            : `<a class="order-btn" href="${saree.whatsapp}" target="_blank">Order/Enquiry</a>`;
 
         card.innerHTML = `
             <img src="${saree.image}" alt="${saree.name}">
