@@ -179,7 +179,7 @@
         name: row.c[0]?.v || "Unknown Saree",
         image: row.c[1]?.v || "https://via.placeholder.com/250",
         availability: row.c[2]?.v || "Available",  
-        whatsapp: `https://wa.me/9381403370?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?`
+        whatsapp: `https://wa.me/9381403370?text=Hello!%20I'm%20interested%20in%20the%20${encodeURIComponent(row.c[0]?.v || "saree")}.%20Can%20you%20share%20the%20details?%0A%0AImage:%20${encodeURIComponent(row.c[1]?.v || "")}`
     }));
     renderSarees();
 }
